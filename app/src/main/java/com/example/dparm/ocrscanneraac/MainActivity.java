@@ -6,11 +6,10 @@
     Life Cycle
  */
 package com.example.dparm.ocrscanneraac;
-
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements CardAdapter.ItemC
 
         // Set the layout for the RecyclerView to be a linear layout, which measures and
         // positions items within a RecyclerView into a linear list
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         // Initialize the adapter and attach it to the RecyclerView
         mAdapter = new CardAdapter(this, this);
@@ -77,21 +76,7 @@ public class MainActivity extends AppCompatActivity implements CardAdapter.ItemC
             }
         }).attachToRecyclerView(mRecyclerView);
 
-        /*
-         Set the Floating Action Button (FAB) to its corresponding View.
-         Attach an OnClickListener to it, so that when it's clicked, a new intent will be created
-         to launch the CardScannerActivity.
-         */
-        FloatingActionButton fabButton = findViewById(R.id.fab);
-
-        fabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Create a new intent to start an CardScannerActivity
-                Intent addCardIntent = new Intent(MainActivity.this, CardScannerActivity.class);
-                startActivity(addCardIntent);
-            }
-        });
+        addListenerOnButton();
 
         // load the database instance
         mDB = AppDatabase.getInstance(getApplicationContext());
@@ -104,12 +89,31 @@ public class MainActivity extends AppCompatActivity implements CardAdapter.ItemC
     protected void onResume() {
         super.onResume();
         retrieveCards();
-
-
     }
 
+    /*
+    This method Set the Floating Action Button (FAB) to its corresponding View.
+    Attach an OnClickListener to it, so that when it's clicked, a new intent will be created
+    to launch the CardScannerActivity.
+    */
+    public void addListenerOnButton(){
+        FloatingActionButton fabButton = findViewById(R.id.fab);
+
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create a new intent to start an CardScannerActivity
+                Intent addCardIntent = new Intent(MainActivity.this, CardScannerActivity.class);
+                startActivity(addCardIntent);
+            }
+        });
+    }
+
+    /*
+    This method retrieves the Card Entry object from database
+    using runnable within diskIO from AppExecutor to achieve back thread concurrency
+     */
     private void retrieveCards() {
-        // retrieves the Card Entry object into database using runnable within diskIO from AppExecutor
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -121,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements CardAdapter.ItemC
                         mAdapter.setCards(cards);
                     }
                 });
-
             }
         });
     }

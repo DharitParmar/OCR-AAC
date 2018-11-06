@@ -13,7 +13,7 @@ import com.example.dparm.ocrscanneraac.database.CardEntry;
 import java.util.List;
 
 
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
+public class  CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
 
 
     // Member variable to handle item clicks
